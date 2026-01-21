@@ -13,6 +13,15 @@ const serviceRequestSchema = new mongoose.Schema(
     // For now store image URLs/URIs as strings (later you can upload to S3/Cloudinary)
     images: [{ type: String }],
 
+    // Address Snapshot
+    address: {
+      fullAddress: { type: String },
+      coordinates: {
+        latitude: { type: Number },
+        longitude: { type: Number },
+      },
+    },
+
     // Scheduling
     preferredDate: { type: Date },     // e.g. selectedDate
     preferredTime: { type: String },   // e.g. "02:30 PM"

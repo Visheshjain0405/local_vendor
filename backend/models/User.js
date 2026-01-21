@@ -7,7 +7,14 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true
     },
-
+    name: {
+      type: String,
+      default: "Unknown User"
+    },
+    profileImage: {
+      type: String, // URL or base64 string
+      default: ""
+    },
     role: {
       type: String,
       enum: ["user", "vendor"],

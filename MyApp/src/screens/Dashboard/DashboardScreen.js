@@ -1,16 +1,42 @@
 import React from 'react';
-import { 
-  View, 
-  Text, 
+import {
+  View,
+  Text,
   TextInput,
-  ScrollView, 
-  TouchableOpacity, 
+  ScrollView,
+  TouchableOpacity,
   SafeAreaView,
-  Image 
+  Image
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
+import { useAuth } from "../../context/AuthContext";
+
+import api from "../../api/api";
+
 const DashboardScreen = ({ navigation }) => {
+  const { userData } = useAuth();
+  const [currentLocation, setCurrentLocation] = React.useState("Locating...");
+
+  React.useEffect(() => {
+    fetchDefaultLocation();
+  }, []);
+
+  const fetchDefaultLocation = async () => {
+    try {
+      const response = await api.get("/location");
+      if (response.data.success && response.data.locations.length > 0) {
+        const defaultLoc = response.data.locations.find(l => l.isDefault) || response.data.locations[0];
+        setCurrentLocation(`${defaultLoc.address.roadArea}, ${defaultLoc.address.city}`);
+      } else {
+        setCurrentLocation("Add Location");
+      }
+    } catch (e) {
+      console.error("Loc fetch error", e);
+      setCurrentLocation("Select Location");
+    }
+  }
+
   const categories = [
     { name: 'Plumbing', icon: 'wrench', color: '#3B82F6' },
     { name: 'Electrical', icon: 'flash', color: '#F59E0B' },
@@ -41,21 +67,23 @@ const DashboardScreen = ({ navigation }) => {
               </Text>
               <View className="flex-row items-center">
                 <Text className="text-base font-bold text-light-text dark:text-dark-text">
-                  Indianagar, Bangalore
+                  {currentLocation}
                 </Text>
                 <Ionicons name="chevron-down" size={16} color="#000" className="ml-1" />
               </View>
             </View>
           </View>
-          
+
           <View className="flex-row items-center">
             <TouchableOpacity className="mr-3 relative">
               <Ionicons name="notifications-outline" size={26} color="#000" />
               <View className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
             </TouchableOpacity>
-            <TouchableOpacity>
-              <Image 
-                source={{ uri: 'https://ui-avatars.com/api/?name=Rahul&background=FF6B35&color=fff&size=128' }}
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Profile")}
+            >
+              <Image
+                source={{ uri: userData?.profileImage || `https://ui-avatars.com/api/?name=${userData?.name || "Unknown"}&background=FF6B35&color=fff&size=128` }}
                 className="w-10 h-10 rounded-full"
               />
             </TouchableOpacity>
@@ -65,7 +93,7 @@ const DashboardScreen = ({ navigation }) => {
         {/* Greeting */}
         <View className="px-5 mt-3">
           <Text className="text-3xl font-bold text-light-text dark:text-dark-text">
-            Hello, Rahul 👋
+            Hello, {userData?.name?.split(' ')[0] || "User"} 👋
           </Text>
         </View>
 
@@ -73,7 +101,7 @@ const DashboardScreen = ({ navigation }) => {
         <View className="px-5 mt-5">
           <View className="bg-white dark:bg-dark-surface rounded-xl px-4 py-3 flex-row items-center shadow-sm">
             <Ionicons name="search" size={20} color="#9CA3AF" />
-            <TextInput 
+            <TextInput
               placeholder="Search for AC repair, painting..."
               placeholderTextColor="#9CA3AF"
               className="flex-1 ml-3 text-base text-light-text dark:text-dark-text"
@@ -82,8 +110,8 @@ const DashboardScreen = ({ navigation }) => {
         </View>
 
         {/* Offer Cards */}
-        <ScrollView 
-          horizontal 
+        <ScrollView
+          horizontal
           showsHorizontalScrollIndicator={false}
           className="mt-6 px-5"
           contentContainerStyle={{ paddingRight: 20 }}
@@ -124,10 +152,10 @@ const DashboardScreen = ({ navigation }) => {
           <Text className="text-xl font-bold text-light-text dark:text-dark-text mb-4">
             What are you looking for?
           </Text>
-          
+
           <View className="flex-row flex-wrap justify-between">
             {categories.map((category, index) => (
-              <TouchableOpacity 
+              <TouchableOpacity
                 key={index}
                 onPress={() => handleCategoryPress(category)}
                 className="w-[48%] bg-white dark:bg-dark-surface rounded-2xl p-5 mb-4 items-center shadow-sm"
@@ -164,13 +192,16 @@ const DashboardScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Active Requests */}
-        <View className="px-5 mt-8 pb-6">
+        {/* Active Requests (Disabled/Grayed Out) */}
+        <View className="px-5 mt-8 pb-6 opacity-40 pointer-events-none relative">
+          {/* Overlay to prevent interactions */}
+          <View className="absolute inset-0 z-10 bg-transparent" />
+
           <View className="flex-row items-center justify-between mb-4">
             <Text className="text-xl font-bold text-light-text dark:text-dark-text">
               Active Requests
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity disabled>
               <Text className="text-blue-600 font-semibold">See all</Text>
             </TouchableOpacity>
           </View>
@@ -199,7 +230,7 @@ const DashboardScreen = ({ navigation }) => {
             {/* Technician Info */}
             <View className="flex-row items-center justify-between mt-4 pt-4 border-t border-gray-100">
               <View className="flex-row items-center flex-1">
-                <Image 
+                <Image
                   source={{ uri: 'https://ui-avatars.com/api/?name=Rahul+Kumar&background=3B82F6&color=fff&size=128' }}
                   className="w-10 h-10 rounded-full"
                 />
@@ -219,7 +250,7 @@ const DashboardScreen = ({ navigation }) => {
                   </View>
                 </View>
               </View>
-              
+
               <View className="flex-row items-center">
                 <TouchableOpacity className="bg-gray-100 w-10 h-10 rounded-full items-center justify-center mr-2">
                   <Ionicons name="chatbubble-outline" size={18} color="#000" />
@@ -253,6 +284,7 @@ const DashboardScreen = ({ navigation }) => {
             </View>
           </View>
         </View>
+
       </ScrollView>
 
     </SafeAreaView>

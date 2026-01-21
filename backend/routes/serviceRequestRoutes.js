@@ -9,10 +9,19 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB per image
   fileFilter: (req, file, cb) => {
-    if (!file.mimetype.startsWith("image/")) {
-      return cb(new Error("Only image files are allowed"));
+    // Allow images and documents (pdf, doc, docx, txt)
+    // You can add specific checks if needed, but for now we essentially allow all or check basic types
+    if (
+      file.mimetype.startsWith("image/") ||
+      file.mimetype === "application/pdf" ||
+      file.mimetype === "application/msword" ||
+      file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+      file.mimetype === "text/plain"
+    ) {
+      cb(null, true);
+    } else {
+      cb(new Error("Unsupported file type. Please upload images or documents."));
     }
-    cb(null, true);
   },
 });
 

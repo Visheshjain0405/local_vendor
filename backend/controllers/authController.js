@@ -95,7 +95,71 @@ export const verifyWhatsAppOTP = async (req, res) => {
       user: {
         id: user._id,
         phone: user.phone,
-        role: user.role
+        role: user.role,
+        name: user.name,
+        profileImage: user.profileImage
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/**
+ * GET CURRENT PROFILE
+ */
+export const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json({
+      success: true,
+      user: {
+        id: user._id,
+        phone: user.phone,
+        role: user.role,
+        name: user.name,
+        profileImage: user.profileImage
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/**
+ * UPDATE PROFILE
+ */
+export const updateProfile = async (req, res) => {
+  try {
+    const { name } = req.body;
+    let profileImage = null;
+
+    console.log("📝 Update Profile Request Body:", req.body);
+    // console.log("📁 Update Profile File:", req.file);
+
+    if (req.file) {
+      profileImage = req.file.path; // Cloudinary URL
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (name) user.name = name;
+    if (profileImage) user.profileImage = profileImage;
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Profile updated successfully",
+      user: {
+        id: user._id,
+        phone: user.phone,
+        role: user.role,
+        name: user.name,
+        profileImage: user.profileImage
       }
     });
   } catch (err) {

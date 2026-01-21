@@ -150,6 +150,29 @@ const OtpScreen = () => {
               <Text className="text-sm font-semibold text-light-text dark:text-dark-text mt-1">
                 {phone}
               </Text>
+
+              {__DEV__ && devOtp ? (
+  <View className="mt-4 bg-gray-100 rounded-xl px-4 py-3 w-full">
+    <Text className="text-xs text-gray-500 text-center mb-1">
+      DEV ONLY OTP
+    </Text>
+
+    <Text className="text-2xl font-bold text-center text-black tracking-widest">
+      {devOtp}
+    </Text>
+
+    <TouchableOpacity
+      className="mt-3 bg-primary rounded-lg py-2"
+      onPress={() => setOtp(String(devOtp).split(""))}
+      activeOpacity={0.8}
+    >
+      <Text className="text-white text-center font-semibold">
+        Auto Fill OTP
+      </Text>
+    </TouchableOpacity>
+  </View>
+) : null}
+
             </View>
 
             {/* OTP Input */}

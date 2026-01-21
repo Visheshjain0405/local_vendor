@@ -5,7 +5,7 @@ export const uploadBufferToCloudinary = (buffer, options = {}) =>
     const stream = cloudinary.uploader.upload_stream(
       {
         folder: options.folder || "service_requests",
-        resource_type: "image",
+        resource_type: "auto",
       },
       (err, result) => {
         if (err) return reject(err);

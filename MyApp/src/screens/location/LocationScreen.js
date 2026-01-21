@@ -48,13 +48,8 @@ const LocationSelection = () => {
   const mapRef = useRef(null);
   const fullMapRef = useRef(null);
 
-  const { completeOnboarding } = useAuth();
+  const { completeOnboarding, isLoggedIn } = useAuth();
   const navigation = useNavigation();
-
-    navigation.reset({
-    index: 0,
-    routes: [{ name: "MainApp" }],
-  });
 
   // Initial location fetch
   useEffect(() => {
@@ -167,9 +162,12 @@ const LocationSelection = () => {
 
       console.log("📍 LOCATION SAVED:", res.data);
 
-await completeOnboarding();
-
-      Alert.alert("Success", "Location saved successfully");
+      if (isLoggedIn) {
+        Alert.alert("Success", "Location saved successfully");
+        navigation.goBack();
+      } else {
+        await completeOnboarding();
+      }
 
     } catch (err) {
       console.log("❌ SAVE LOCATION ERROR:", err.response?.data);
@@ -317,43 +315,42 @@ await completeOnboarding();
             </TouchableOpacity>
           </View>
 
-<View className="mb-6">
-  <Text className="text-base font-semibold text-light-text dark:text-dark-text mb-3">
-    Save Address As
-  </Text>
+          <View className="mb-6">
+            <Text className="text-base font-semibold text-light-text dark:text-dark-text mb-3">
+              Save Address As
+            </Text>
 
-  <View className="flex-row">
-    {[
-      { key: "home", label: "Home", icon: "home-outline" },
-      { key: "office", label: "Office", icon: "briefcase-outline" },
-      { key: "other", label: "Other", icon: "location-outline" },
-    ].map((item) => {
-      const selected = addressType === item.key;
-      return (
-        <TouchableOpacity
-          key={item.key}
-          onPress={() => setAddressType(item.key)}
-          activeOpacity={0.8}
-          className={`flex-row items-center px-4 py-3 rounded-full mr-3 border ${
-            selected
-              ? "bg-primary border-primary"
-              : "bg-light-surface dark:bg-dark-surface border-gray-200 dark:border-gray-700"
-          }`}
-        >
-          <Ionicons
-            name={item.icon}
-            size={18}
-            color={selected ? "#fff" : "#0f1729"}
-            style={{ marginRight: 8 }}
-          />
-          <Text className={`${selected ? "text-white" : "text-light-text dark:text-dark-text"} font-semibold`}>
-            {item.label}
-          </Text>
-        </TouchableOpacity>
-      );
-    })}
-  </View>
-</View>
+            <View className="flex-row">
+              {[
+                { key: "home", label: "Home", icon: "home-outline" },
+                { key: "office", label: "Office", icon: "briefcase-outline" },
+                { key: "other", label: "Other", icon: "location-outline" },
+              ].map((item) => {
+                const selected = addressType === item.key;
+                return (
+                  <TouchableOpacity
+                    key={item.key}
+                    onPress={() => setAddressType(item.key)}
+                    activeOpacity={0.8}
+                    className={`flex-row items-center px-4 py-3 rounded-full mr-3 border ${selected
+                      ? "bg-primary border-primary"
+                      : "bg-light-surface dark:bg-dark-surface border-gray-200 dark:border-gray-700"
+                      }`}
+                  >
+                    <Ionicons
+                      name={item.icon}
+                      size={18}
+                      color={selected ? "#fff" : "#0f1729"}
+                      style={{ marginRight: 8 }}
+                    />
+                    <Text className={`${selected ? "text-white" : "text-light-text dark:text-dark-text"} font-semibold`}>
+                      {item.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
 
 
           {/* City Input */}
@@ -415,9 +412,8 @@ await completeOnboarding();
           {/* Save and Proceed Button */}
           <TouchableOpacity
             onPress={handleSaveAndProceed}
-            className={`bg-primary rounded-xl py-4 items-center justify-center shadow-lg ${
-              !isFormValid ? "opacity-50" : ""
-            }`}
+            className={`bg-primary rounded-xl py-4 items-center justify-center shadow-lg ${!isFormValid ? "opacity-50" : ""
+              }`}
             activeOpacity={0.8}
             disabled={!isFormValid}
           >

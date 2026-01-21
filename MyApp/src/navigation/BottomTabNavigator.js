@@ -10,6 +10,7 @@ import tailwindConfig from '../../tailwind.config.js';
 import DashboardScreen from '../screens/Dashboard/DashboardScreen';
 import ServiceRequestScreen from '../screens/service/ServiceRequestScreen';
 import ProfileScreen from "../screens/profile/ProfileScreen";
+import LocationSelection from "../screens/location/LocationScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -27,13 +28,14 @@ const HomeStackNavigator = () => {
       }}
     >
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
-      <Stack.Screen 
-        name="ServiceRequest" 
+      <Stack.Screen
+        name="ServiceRequest"
         component={ServiceRequestScreen}
         options={{
           animationEnabled: true,
         }}
       />
+      <Stack.Screen name="Location" component={LocationSelection} />
     </Stack.Navigator>
   );
 };
@@ -52,7 +54,7 @@ const TabNavigator = () => {
           else if (route.name === 'Messages') iconName = focused ? 'chatbubble' : 'chatbubble-outline';
           else if (route.name === 'Account') iconName = focused ? 'person' : 'person-outline';
 
-          const color = focused 
+          const color = focused
             ? (isDark ? colors.dark.text : colors.primary)
             : (isDark ? colors.dark.muted : colors.light.muted);
 

@@ -13,6 +13,8 @@ export const createServiceRequest = async (req, res) => {
       timeSlot,
     } = req.body;
 
+    console.log(req.body)
+
     if (!categoryName || !description) {
       return res.status(400).json({ message: "Category and description are required" });
     }
@@ -37,6 +39,7 @@ export const createServiceRequest = async (req, res) => {
       preferredDate: preferredDate ? new Date(preferredDate) : null,
       preferredTime: preferredTime || null,
       timeSlot: timeSlot || null,
+      address: req.body.address ? JSON.parse(req.body.address) : null, // Handle FormData parsing if sent as string
     });
 
     res.status(201).json({ success: true, request });
